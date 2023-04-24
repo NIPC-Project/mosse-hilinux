@@ -1,0 +1,16 @@
+# My
+playground/
+playground.*
+
+# Large files
+# input/
+output/
+
+# Editor
+.vscode/
+
+# C
+build/
+
+# Python
+__pycache__
