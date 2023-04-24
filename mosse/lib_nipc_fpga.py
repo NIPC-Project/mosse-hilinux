@@ -90,36 +90,24 @@ class NipcFpga:
             # PythonLogger("debug", "读寄存器成功")
             return value
 
-    def _WriteRegisterRW(self, index: int, value: int):
-        address = index * 0x04
-        self._WriteRegister(address=address, value=value)
-
-    def _ReadRegisterRW(self, index: int) -> int:
-        address = index * 0x04
-        return self._ReadRegister(address=address)
-
-    def _ReadRegisterR(self, index: int) -> int:
-        address = (lib_parameters.AXI_REG_RW_NUM + index) * 0x04
-        return self._ReadRegister(address=address)
-
     # [AxiLite API]
 
     def Reset(self):
         # [初始化板卡]
         self.clib.XPcie_Reset_Device(self.pcieFd)
         PythonLogger("log", "板卡初始化成功")
-        self._WriteRegisterRW(index=0, value=1)  # `usr_rst` postedge
+        self.WriteRegisterRW(index=0, value=1)  # `usr_rst` postedge
         time.sleep(0.001)
-        self._WriteRegisterRW(index=0, value=0)  # reset `usr_rst` to 0
+        self.WriteRegisterRW(index=0, value=0)  # reset `usr_rst` to 0
 
     def StartProcess(self):
-        self._WriteRegisterRW(index=1, value=1)
+        self.WriteRegisterRW(index=1, value=1)
 
     def WaitProcessDone(self):
         PythonLogger("log", "开始轮询 FPGA 寄存器等待算法结束")
         while True:
             # [检查FPGA算法处理是否结束]
-            _return_value = self._ReadRegisterR(index=0)
+            _return_value = self.ReadRegisterR(index=0)
             if _return_value == 0x1:
                 PythonLogger("log", "FPGA 算法结束")
                 break
@@ -127,18 +115,16 @@ class NipcFpga:
                 PythonLogger("log", "FPGA 算法未结束  继续等待")
                 time.sleep(0.1)  # TODO 轮询时间 可以调整得更小
 
-    def WriteRegisterDin(self, index: int, value: int):
-        address = (index + lib_parameters.AXI_REG_RW_SIGNAL_NUM) * 0x04
+    def WriteRegisterRW(self, index: int, value: int):
+        address = index * 0x04
         self._WriteRegister(address=address, value=value)
 
-    def ReadRegisterDin(self, index: int) -> int:
-        address = (index + lib_parameters.AXI_REG_RW_SIGNAL_NUM) * 0x04
+    def ReadRegisterRW(self, index: int) -> int:
+        address = index * 0x04
         return self._ReadRegister(address=address)
 
-    def ReadRegisterDout(self, index: int) -> int:
-        address = (
-            lib_parameters.AXI_REG_RW_NUM + lib_parameters.AXI_REG_R_SIGNAL_NUM + index
-        ) * 0x04
+    def ReadRegisterR(self, index: int) -> int:
+        address = (lib_parameters.AXI_REG_RW_NUM + index) * 0x04
         return self._ReadRegister(address=address)
 
     # [AxiMM]
@@ -198,16 +184,7 @@ class NipcFpga:
         regs_rw: list[int] = []
         regs_r: list[int] = []
         for i in range(lib_parameters.AXI_REG_RW_NUM):
-            regs_rw.append(self._ReadRegisterRW(i))
+            regs_rw.append(self.ReadRegisterRW(i))
         for i in range(lib_parameters.AXI_REG_R_NUM):
-            regs_r.append(self._ReadRegisterR(i))
+            regs_r.append(self.ReadRegisterR(i))
         PythonLogger("debug", f"registers {regs_rw=} {regs_r=}")
-
-    def PrintRegistersData(self):
-        regs_din: list[int] = []
-        regs_dout: list[int] = []
-        for i in range(lib_parameters.AXI_REG_RW_DIN_NUM):
-            regs_din.append(self.ReadRegisterDin(i))
-        for i in range(lib_parameters.AXI_REG_R_DOUT_NUM):
-            regs_dout.append(self.ReadRegisterDout(i))
-        PythonLogger("debug", f"registers {regs_din=} {regs_dout=}")

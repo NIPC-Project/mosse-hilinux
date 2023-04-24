@@ -1,5 +1,4 @@
 import lib_nipc_fpga
-import lib_parameters
 from lib_log import PythonLogger
 
 
@@ -15,31 +14,42 @@ def bytes2float(value: bytes, fixed_num: int) -> float:
     )
 
 
+x, y, w, h = [257, 163, 57, 36]
+xc = int(x + w / 2)
+yc = int(y + h / 2)
+
+nipc_fpga = lib_nipc_fpga.NipcFpga()
+
 if __name__ == "__main__":
-    x, y, w, h = [257, 163, 57, 36]
-    xc = int(x + w / 2)
-    yc = int(y + h / 2)
+    # [init]
 
-    with open("1.bin", "rb") as f:
-        test_data = f.read()
-        PythonLogger("debug", f"{len(test_data)=}")
-
-    nipc_fpga = lib_nipc_fpga.NipcFpga()
     nipc_fpga.Reset()
-
-    nipc_fpga.WriteRegisterDin(index=0, value=xc)
-    nipc_fpga.WriteRegisterDin(index=1, value=yc)
-    nipc_fpga.WriteMemory(data=bytes(test_data))
-
+    nipc_fpga.WriteRegisterRW(index=1, value=0)
+    nipc_fpga.WriteRegisterRW(index=2, value=xc + yc * 2**16)
+    with open("frames/1.bin", "rb") as f:
+        frame_init = f.read()
+        PythonLogger("debug", f"{len(frame_init)=}")
+    nipc_fpga.WriteMemory(data=bytes(frame_init))
     nipc_fpga.WaitProcessDone()
-    return_data = nipc_fpga.ReadMemory(size=lib_parameters.FPGA_TRANSMIT_BUFFER_SIZE)
-    PythonLogger("debug", f"{len(return_data)=}")
 
-    start = 0
-    end = 32
-    for i in range(start, end):
-        re = bytes2float(value=return_data[i * 8 + 0 : i * 8 + 4], fixed_num=16)
-        im = bytes2float(value=return_data[i * 8 + 4 : i * 8 + 8], fixed_num=16)
-        print(f"{re + im * 1j:.3f}")
+    # [update]
+
+    # TODO 目前只使用前 16 张图片
+    # frame_count = 374
+    frame_count = 16
+    for i in range(2, frame_count + 1):
+        nipc_fpga.Reset()
+        nipc_fpga.WriteRegisterRW(index=1, value=1)
+        with open("frames/1.bin", "rb") as f:
+            frame = f.read()
+            PythonLogger("debug", f"{len(frame)=}")
+        nipc_fpga.WriteMemory(data=bytes(frame))
+        nipc_fpga.WaitProcessDone()
+        result = nipc_fpga.ReadRegisterR(index=1)
+        xc = result % 2**16
+        yc = result // 2**16
+        PythonLogger("result", f"({xc=}, {yc=})")
+
+    # [quit]
 
     nipc_fpga.Quit()
