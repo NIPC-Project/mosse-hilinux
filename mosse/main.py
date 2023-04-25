@@ -14,13 +14,18 @@ def bytes2float(value: bytes, fixed_num: int) -> float:
     )
 
 
+# TODO 目前只使用前 16 张图片
+# frame_count = 374
+frame_count = 16
+
 x, y, w, h = [257, 163, 57, 36]
 xc = int(x + w / 2)
 yc = int(y + h / 2)
 
-nipc_fpga = lib_nipc_fpga.NipcFpga()
 
 if __name__ == "__main__":
+    nipc_fpga = lib_nipc_fpga.NipcFpga()
+
     # [init]
 
     nipc_fpga.Reset()
@@ -34,13 +39,10 @@ if __name__ == "__main__":
 
     # [update]
 
-    # TODO 目前只使用前 16 张图片
-    # frame_count = 374
-    frame_count = 16
     for i in range(2, frame_count + 1):
         nipc_fpga.Reset()
         nipc_fpga.WriteRegisterRW(index=1, value=1)
-        with open("frames/1.bin", "rb") as f:
+        with open(f"frames/{i}.bin", "rb") as f:
             frame = f.read()
             PythonLogger("debug", f"{len(frame)=}")
         nipc_fpga.WriteMemory(data=bytes(frame))
