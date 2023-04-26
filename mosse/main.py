@@ -42,6 +42,7 @@ if __name__ == "__main__":
     for i in range(2, frame_count + 1):
         nipc_fpga.Reset()
         nipc_fpga.WriteRegisterRW(index=1, value=1)
+        nipc_fpga.WriteRegisterRW(index=2, value=xc + yc * 2**16)
         with open(f"frames/{i}.bin", "rb") as f:
             frame = f.read()
             PythonLogger("debug", f"{len(frame)=}")
