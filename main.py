@@ -22,7 +22,7 @@ nipc_fpga = lib_nipc_fpga.NipcFpga()
 nipc_fpga.Reset()
 nipc_fpga.WriteRegisterRW(index=1, value=0)
 nipc_fpga.WriteRegisterRW(index=2, value=int(xc * 2 + yc * 2 * 2**16))
-with open(f"frames-gray/{series_name}/1.bin", "rb") as f:
+with open(f"frames-graybin/{series_name}/1.bin", "rb") as f:
     frame_init = f.read()
 nipc_fpga.WriteMemory(data=bytes(frame_init))
 nipc_fpga.WaitProcessDone()
