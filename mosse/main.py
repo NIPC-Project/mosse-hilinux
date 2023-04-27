@@ -14,13 +14,13 @@ def bytes2float(value: bytes, fixed_num: int) -> float:
     )
 
 
-# TODO 目前只使用前 16 张图片
+# TODO 目前只使用前几张图片
 # frame_count = 374
-frame_count = 16
+frame_count = 2
 
 x, y, w, h = [257, 163, 57, 36]
-xc = int(x + w / 2) # 285
-yc = int(y + h / 2) # 181
+xc = int(x + w / 2)  # 285
+yc = int(y + h / 2)  # 181
 
 
 if __name__ == "__main__":
@@ -33,19 +33,19 @@ if __name__ == "__main__":
     nipc_fpga.WriteRegisterRW(index=2, value=xc + yc * 2**16)
     with open("frames/1.bin", "rb") as f:
         frame_init = f.read()
-        # PythonLogger("debug", f"{len(frame_init)=}")
     nipc_fpga.WriteMemory(data=bytes(frame_init))
     nipc_fpga.WaitProcessDone()
 
     # [update]
 
     for i in range(2, frame_count + 1):
+        # input("to continue, press enter:\n")
         nipc_fpga.Reset()
         nipc_fpga.WriteRegisterRW(index=1, value=1)
         nipc_fpga.WriteRegisterRW(index=2, value=xc + yc * 2**16)
-        with open(f"frames/{i}.bin", "rb") as f:
+        # with open(f"frames/{i}.bin", "rb") as f:
+        with open(f"frames/1.bin", "rb") as f:
             frame = f.read()
-            # PythonLogger("debug", f"{len(frame)=}")
         nipc_fpga.WriteMemory(data=bytes(frame))
         nipc_fpga.WaitProcessDone()
         result = nipc_fpga.ReadRegisterR(index=1)
