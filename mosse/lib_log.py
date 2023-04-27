@@ -13,8 +13,7 @@ class PythonLogger:
         )
 
     def __init__(self, title: str = "log", label: str = ""):
-        pass
-        # print(f"[{title}]\t{self._GetFileInfo()}\n\t{label}")
+        print(f"[{title}]\t{self._GetFileInfo()}\n\t{label}")
 
 
 # NOTE: Time measured is not accurate... It seems that `_GetFileInfo` waste lots of time...
