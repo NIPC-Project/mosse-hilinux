@@ -113,7 +113,7 @@ class NipcFpga:
                 break
             else:
                 PythonLogger("log", "FPGA 算法未结束  继续等待")
-                time.sleep(0.1)  # TODO 轮询时间 可以调整得更小
+                time.sleep(0.001)  # TODO 轮询时间 可以调整得更小
 
     def WriteRegisterRW(self, index: int, value: int):
         address = index * 0x04
