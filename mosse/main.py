@@ -19,8 +19,8 @@ def bytes2float(value: bytes, fixed_num: int) -> float:
 frame_count = 16
 
 x, y, w, h = [257, 163, 57, 36]
-xc = int(x + w / 2)
-yc = int(y + h / 2)
+xc = int(x + w / 2) # 285
+yc = int(y + h / 2) # 181
 
 
 if __name__ == "__main__":
@@ -33,7 +33,7 @@ if __name__ == "__main__":
     nipc_fpga.WriteRegisterRW(index=2, value=xc + yc * 2**16)
     with open("frames/1.bin", "rb") as f:
         frame_init = f.read()
-        PythonLogger("debug", f"{len(frame_init)=}")
+        # PythonLogger("debug", f"{len(frame_init)=}")
     nipc_fpga.WriteMemory(data=bytes(frame_init))
     nipc_fpga.WaitProcessDone()
 
@@ -45,7 +45,7 @@ if __name__ == "__main__":
         nipc_fpga.WriteRegisterRW(index=2, value=xc + yc * 2**16)
         with open(f"frames/{i}.bin", "rb") as f:
             frame = f.read()
-            PythonLogger("debug", f"{len(frame)=}")
+            # PythonLogger("debug", f"{len(frame)=}")
         nipc_fpga.WriteMemory(data=bytes(frame))
         nipc_fpga.WaitProcessDone()
         result = nipc_fpga.ReadRegisterR(index=1)

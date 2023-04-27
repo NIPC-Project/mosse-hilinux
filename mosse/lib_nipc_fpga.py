@@ -147,7 +147,7 @@ class NipcFpga:
         if _return_value < 0:
             PythonLogger("error", "写 FPGA 内存失败")
             self.Quit()
-        PythonLogger("log", "写 FPGA 内存成功")
+        # PythonLogger("log", "写 FPGA 内存成功")
 
     def ReadMemory(self, size: int, address: int = 0x00) -> bytes:
         # int XPcie_DMA_Read(int fd, uint32_t addr, char *buffer, size_t size);
