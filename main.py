@@ -2,7 +2,7 @@ import lib_nipc_fpga
 from lib_log import PythonLogger
 
 
-series_name = "car"  # car, cup, jump
+series_name = "car"  # car, cup
 
 if series_name == "car":
     frame_count = 374
@@ -10,9 +10,6 @@ if series_name == "car":
 elif series_name == "cup":
     frame_count = 303
     x, y, w, h = [124.67, 92.308, 46.73, 58.572]
-elif series_name == "jump":
-    frame_count = 228
-    x, y, w, h = [328.0, 189.0, 53.0, 50.0]
 
 xc: float = x + w / 2
 yc: float = y + h / 2
