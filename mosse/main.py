@@ -16,7 +16,7 @@ def bytes2float(value: bytes, fixed_num: int) -> float:
 
 # TODO 目前只使用前几张图片
 # frame_count = 374
-frame_count = 2
+frame_count = 16
 
 x, y, w, h = [257, 163, 57, 36]
 xc = int(x + w / 2)  # 285
