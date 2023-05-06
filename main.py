@@ -34,7 +34,7 @@ for i in range(2, frame_count + 1):
     nipc_fpga.Reset()
     nipc_fpga.WriteRegisterRW(index=1, value=1)
     nipc_fpga.WriteRegisterRW(index=2, value=int(xc * 2 + yc * 2 * 2**16))
-    with open(f"frames-gray/{series_name}/{i}.bin", "rb") as f:
+    with open(f"frames-graybin/{series_name}/{i}.bin", "rb") as f:
         # with open(f"frames/1.bin", "rb") as f:
         frame = f.read()
     nipc_fpga.WriteMemory(data=bytes(frame))
@@ -43,11 +43,11 @@ for i in range(2, frame_count + 1):
     xc = (ycxc % 2**16) / 2
     yc = (ycxc // 2**16) / 2
     PythonLogger("result", f"({xc=}, {yc=})")
-    result.append([int(xc), int(yc)])
+    result.append([xc, yc])
 
 # [quit]
 
-with open("fresult-{series_name}.py", "w") as f:
+with open(f"result-{series_name}.py", "w") as f:
     f.write(f"result = {result}\n")
 
 nipc_fpga.Quit()
