@@ -2,14 +2,16 @@ import lib_nipc_fpga
 from lib_log import PythonLogger
 
 
-series_name = "cup"  # car, cup
+series_name = "car"  # car, cup
 
 if series_name == "car":
     frame_count = 374
+    frame_size = [320, 240]
     frame_rate = 30
     x, y, w, h = [257.0, 163.0, 57.0, 36.0]
 elif series_name == "cup":
     frame_count = 303
+    frame_size = [320, 240]
     frame_rate = 30
     x, y, w, h = [124.67, 92.308, 46.73, 58.572]
 
@@ -37,7 +39,6 @@ for i in range(2, frame_count + 1):
     nipc_fpga.WriteRegisterRW(index=1, value=1)
     nipc_fpga.WriteRegisterRW(index=2, value=int(xc * 2) + int(yc * 2) * 2**16)
     with open(f"frames-graybin/{series_name}/{i}.bin", "rb") as f:
-        # with open(f"frames/1.bin", "rb") as f:
         frame = f.read()
     nipc_fpga.WriteMemory(data=bytes(frame))
     nipc_fpga.WaitProcessDone()
